@@ -1,80 +1,28 @@
-"use client";
-
-import { useEffect, useState } from "react";
-import Image from "next/image";
-import Link from "next/link";
-import { useParams } from "next/navigation";
-import { ArrowLeft, Calendar, Clock } from "lucide-react";
+// app/article/[id]/page.tsx
 
 import { api } from "@/lib/api-mock";
-import { Article } from "@/lib/types";
+import { notFound } from "next/navigation";
+import Image from "next/image";
+import Link from "next/link";
+import { ArrowLeft, Calendar, Clock } from "lucide-react";
 import { AdBanner } from "@/components/ad-banner";
-import { buttonVariants } from "@/components/ui/button";
 import { CategorySection } from "@/components/category-section";
 import { Separator } from "@/components/ui/separator";
-import { Skeleton } from "@/components/ui/skeleton";
+import { buttonVariants } from "@/components/ui/button";
 
-export default function ArticlePage() {
-  const params = useParams();
-  const articleId = params.id as string;
-  const [article, setArticle] = useState<Article | null>(null);
-  const [relatedArticles, setRelatedArticles] = useState<Article[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+export async function generateStaticParams() {
+  const articles = await api.getAllArticles(); // implement this in your api-mock
+  return articles.slice(0, 50).map((article: any) => ({
+    id: article.id,
+  }));
+}
 
-  useEffect(() => {
-    const fetchArticle = async () => {
-      setIsLoading(true);
-      try {
-        const data = await api.getArticleById(articleId);
-        setArticle(data || null);
+export default async function ArticlePage({ params }: { params: { id: string } }) {
+  const article = await api.getArticleById(params.id);
+  if (!article) return notFound();
 
-        if (data?.category) {
-          const related = await api.getArticles(data.category, 4);
-          setRelatedArticles(
-            related.filter((item) => item.id !== articleId).slice(0, 3)
-          );
-        }
-      } catch (error) {
-        console.error("Error fetching article:", error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    if (articleId) {
-      fetchArticle();
-    }
-  }, [articleId]);
-
-  if (isLoading) {
-    return (
-      <div className="container py-8">
-        <div className="max-w-3xl mx-auto">
-          <Skeleton className="h-8 w-2/3 mb-4" />
-          <Skeleton className="h-6 w-full mb-8" />
-          <Skeleton className="aspect-video w-full mb-8" />
-          <div className="space-y-4">
-            <Skeleton className="h-4 w-full" />
-            <Skeleton className="h-4 w-full" />
-            <Skeleton className="h-4 w-full" />
-            <Skeleton className="h-4 w-5/6" />
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  if (!article) {
-    return (
-      <div className="container py-16 text-center">
-        <h1 className="text-2xl font-bold mb-4">Article Not Found</h1>
-        <p className="mb-8">The article you're looking for doesn't exist.</p>
-        <Link href="/" className={buttonVariants()}>
-          Return Home
-        </Link>
-      </div>
-    );
-  }
+  const related = await api.getArticles(article.category, 4);
+  const relatedArticles = related.filter((item: any) => item.id !== params.id).slice(0, 3);
 
   return (
     <>
@@ -89,9 +37,7 @@ export default function ArticlePage() {
           </Link>
 
           <div className="mt-6 mb-8">
-            <h1 className="text-3xl md:text-4xl font-bold mb-4">
-              {article.title}
-            </h1>
+            <h1 className="text-3xl md:text-4xl font-bold mb-4">{article.title}</h1>
             <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
               <div className="flex items-center gap-1">
                 <Calendar className="h-4 w-4" />
@@ -119,7 +65,7 @@ export default function ArticlePage() {
           )}
 
           <div className="prose prose-neutral dark:prose-invert max-w-none">
-            {article.content.split("\n\n").map((paragraph, index) => (
+            {article.content.split("\n\n").map((paragraph: string, index: number) => (
               <p key={index}>{paragraph}</p>
             ))}
           </div>
@@ -128,7 +74,7 @@ export default function ArticlePage() {
             <div className="mt-8">
               <h3 className="text-sm font-medium mb-2">Tags:</h3>
               <div className="flex flex-wrap gap-2">
-                {article.tags.map((tag) => (
+                {article.tags.map((tag: string) => (
                   <span
                     key={tag}
                     className="px-3 py-1 bg-secondary text-secondary-foreground rounded-full text-xs font-medium"

@@ -15,6 +15,9 @@ import {
 // Helper function to simulate network delay
 const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
+// Combine all articles
+const allArticles = [...techArticles, ...healthArticles, ...stockArticles];
+
 // Mock API functions
 export const api = {
   // Get featured content for homepage
@@ -50,8 +53,12 @@ export const api = {
 
   async getArticleById(id: string) {
     await delay(200);
-    const allArticles = [...techArticles, ...healthArticles, ...stockArticles];
     return allArticles.find(article => article.id === id);
+  },
+
+  async getAllArticles() {
+    await delay(300);
+    return allArticles;
   },
 
   // Horoscopes
