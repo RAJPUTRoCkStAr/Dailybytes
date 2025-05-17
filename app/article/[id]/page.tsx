@@ -9,7 +9,8 @@ import { AdBanner } from "@/components/ad-banner";
 import { CategorySection } from "@/components/category-section";
 import { Separator } from "@/components/ui/separator";
 import { buttonVariants } from "@/components/ui/button";
-
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1193798857929143"
+     crossorigin="anonymous"></script>
 export async function generateStaticParams() {
   const articles = await api.getAllArticles(); // implement this in your api-mock
   return articles.slice(0, 50).map((article: any) => ({
