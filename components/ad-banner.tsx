@@ -17,11 +17,12 @@ export function AdBanner({
   className = "",
   responsive = true,
 }: AdBannerProps) {
-  const adRef = useRef<HTMLDivElement>(null)
+  // Use the correct type for <ins> element: HTMLModElement
+  const adRef = useRef<HTMLModElement>(null)
 
   useEffect(() => {
-    // Load AdSense script if it hasn't been loaded already
-    if (!window.adsbygoogle) {
+    // Load AdSense script only once
+    if (!document.querySelector("script[src='https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js']")) {
       const script = document.createElement("script")
       script.src = "https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"
       script.async = true
@@ -30,10 +31,10 @@ export function AdBanner({
       document.head.appendChild(script)
     }
 
-    // Push the ad if adsbygoogle is loaded
+    // Push ads
     if (window.adsbygoogle && adRef.current) {
       try {
-        (window.adsbygoogle = window.adsbygoogle || []).push({})
+        ;(window.adsbygoogle = window.adsbygoogle || []).push({})
       } catch (error) {
         console.error("AdSense error:", error)
       }
@@ -56,7 +57,7 @@ export function AdBanner({
   )
 }
 
-// Add this to global.d.ts if needed
+// Add this to a types/global.d.ts file if needed
 declare global {
   interface Window {
     adsbygoogle: any[]

@@ -35,7 +35,7 @@ export function CategoryContent({ categoryId }: { categoryId: string }) {
     const fetchContent = async () => {
       setIsLoading(true);
       try {
-        let data;
+        let data:any[];
         switch (categoryId) {
           case "tech":
           case "health":
