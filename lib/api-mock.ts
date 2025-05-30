@@ -1,6 +1,3 @@
-// This file provides a client-side mock API for development
-// In production, these would be replaced with actual API calls
-
 import {
   techArticles,
   healthArticles,
@@ -12,32 +9,27 @@ import {
   youtubeVideos,
 } from './data';
 
-// Helper function to simulate network delay
 const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
-// Combine all articles
 const allArticles = [...techArticles, ...healthArticles, ...stockArticles];
 
-// Mock API functions
 export const api = {
-  // Get featured content for homepage
   async getFeaturedContent() {
     await delay(500);
     return {
       featuredArticle: techArticles[0],
-      techArticles: techArticles.slice(0, 4),
-      healthArticles: healthArticles.slice(0, 4),
-      stockArticles: stockArticles.slice(0, 4),
-      horoscopes: horoscopes.slice(0, 4),
-      quotes: quotes.slice(0, 4),
-      jokes: jokes.slice(0, 4),
-      brainTeasers: brainTeasers.slice(0, 4),
-      youtubeVideos: youtubeVideos.slice(0, 4),
+      techArticles: techArticles.slice(0, 20),
+      healthArticles: healthArticles.slice(0, 20),
+      stockArticles: stockArticles.slice(0, 20),
+      horoscopes: horoscopes.slice(0, 20),
+      quotes: quotes.slice(0, 20),
+      jokes: jokes.slice(0, 20),
+      brainTeasers: brainTeasers.slice(0, 20),
+      youtubeVideos: youtubeVideos.slice(0, 20),
     };
   },
 
-  // Articles
-  async getArticles(category: string, limit = 10) {
+  async getArticles(category: string, limit = 20) {
     await delay(300);
     switch (category) {
       case 'tech':
@@ -61,8 +53,7 @@ export const api = {
     return allArticles;
   },
 
-  // Horoscopes
-  async getHoroscopes(limit = 12) {
+  async getHoroscopes(limit = 20) {
     await delay(300);
     return horoscopes.slice(0, limit);
   },
@@ -72,8 +63,7 @@ export const api = {
     return horoscopes.find(horoscope => horoscope.id === id);
   },
 
-  // Quotes
-  async getQuotes(limit = 10) {
+  async getQuotes(limit = 20) {
     await delay(300);
     return quotes.slice(0, limit);
   },
@@ -83,8 +73,7 @@ export const api = {
     return quotes.find(quote => quote.id === id);
   },
 
-  // Jokes
-  async getJokes(limit = 10) {
+  async getJokes(limit = 20) {
     await delay(300);
     return jokes.slice(0, limit);
   },
@@ -94,8 +83,7 @@ export const api = {
     return jokes.find(joke => joke.id === id);
   },
 
-  // Brain Teasers
-  async getBrainTeasers(limit = 10) {
+  async getBrainTeasers(limit = 20) {
     await delay(300);
     return brainTeasers.slice(0, limit);
   },
@@ -105,8 +93,7 @@ export const api = {
     return brainTeasers.find(teaser => teaser.id === id);
   },
 
-  // YouTube Videos
-  async getYoutubeVideos(limit = 10) {
+  async getYoutubeVideos(limit = 20) {
     await delay(300);
     return youtubeVideos.slice(0, limit);
   },
