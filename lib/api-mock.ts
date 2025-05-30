@@ -1,3 +1,6 @@
+// This file provides a client-side mock API for development
+// In production, these would be replaced with actual API calls
+
 import {
   techArticles,
   healthArticles,
@@ -9,38 +12,54 @@ import {
   youtubeVideos,
 } from './data';
 
+// Helper function to simulate network delay
 const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
+// Helper function to paginate results
+const paginateResults = (items: any[], page: number, limit: number) => {
+  const start = (page - 1) * limit;
+  return items.slice(start, start + limit);
+};
+
+// Combine all articles
 const allArticles = [...techArticles, ...healthArticles, ...stockArticles];
 
+// Mock API functions
 export const api = {
-  async getFeaturedContent() {
+  // Get featured content for homepage
+  async getFeaturedContent(page = 1, limit = 20) {
     await delay(500);
     return {
       featuredArticle: techArticles[0],
-      techArticles: techArticles.slice(0, 20),
-      healthArticles: healthArticles.slice(0, 20),
-      stockArticles: stockArticles.slice(0, 20),
-      horoscopes: horoscopes.slice(0, 20),
-      quotes: quotes.slice(0, 20),
-      jokes: jokes.slice(0, 20),
-      brainTeasers: brainTeasers.slice(0, 20),
-      youtubeVideos: youtubeVideos.slice(0, 20),
+      techArticles: paginateResults(techArticles, page, limit),
+      healthArticles: paginateResults(healthArticles, page, limit),
+      stockArticles: paginateResults(stockArticles, page, limit),
+      horoscopes: paginateResults(horoscopes, page, limit),
+      quotes: paginateResults(quotes, page, limit),
+      jokes: paginateResults(jokes, page, limit),
+      brainTeasers: paginateResults(brainTeasers, page, limit),
+      youtubeVideos: paginateResults(youtubeVideos, page, limit),
     };
   },
 
-  async getArticles(category: string, limit = 20) {
+  // Articles
+  async getArticles(category: string, page = 1, limit = 20) {
     await delay(300);
+    let articles;
     switch (category) {
       case 'tech':
-        return techArticles.slice(0, limit);
+        articles = techArticles;
+        break;
       case 'health':
-        return healthArticles.slice(0, limit);
+        articles = healthArticles;
+        break;
       case 'stocks':
-        return stockArticles.slice(0, limit);
+        articles = stockArticles;
+        break;
       default:
-        return [];
+        articles = [];
     }
+    return paginateResults(articles, page, limit);
   },
 
   async getArticleById(id: string) {
@@ -53,53 +72,33 @@ export const api = {
     return allArticles;
   },
 
-  async getHoroscopes(limit = 20) {
+  // Horoscopes
+  async getHoroscopes(page = 1, limit = 20) {
     await delay(300);
-    return horoscopes.slice(0, limit);
+    return paginateResults(horoscopes, page, limit);
   },
 
-  async getHoroscopeById(id: string) {
-    await delay(200);
-    return horoscopes.find(horoscope => horoscope.id === id);
-  },
-
-  async getQuotes(limit = 20) {
+  // Quotes
+  async getQuotes(page = 1, limit = 20) {
     await delay(300);
-    return quotes.slice(0, limit);
+    return paginateResults(quotes, page, limit);
   },
 
-  async getQuoteById(id: string) {
-    await delay(200);
-    return quotes.find(quote => quote.id === id);
-  },
-
-  async getJokes(limit = 20) {
+  // Jokes
+  async getJokes(page = 1, limit = 20) {
     await delay(300);
-    return jokes.slice(0, limit);
+    return paginateResults(jokes, page, limit);
   },
 
-  async getJokeById(id: string) {
-    await delay(200);
-    return jokes.find(joke => joke.id === id);
-  },
-
-  async getBrainTeasers(limit = 20) {
+  // Brain Teasers
+  async getBrainTeasers(page = 1, limit = 20) {
     await delay(300);
-    return brainTeasers.slice(0, limit);
+    return paginateResults(brainTeasers, page, limit);
   },
 
-  async getBrainTeaserById(id: string) {
-    await delay(200);
-    return brainTeasers.find(teaser => teaser.id === id);
-  },
-
-  async getYoutubeVideos(limit = 20) {
+  // YouTube Videos
+  async getYoutubeVideos(page = 1, limit = 20) {
     await delay(300);
-    return youtubeVideos.slice(0, limit);
-  },
-
-  async getYoutubeVideoById(id: string) {
-    await delay(200);
-    return youtubeVideos.find(video => video.id === id);
+    return paginateResults(youtubeVideos, page, limit);
   },
 };
