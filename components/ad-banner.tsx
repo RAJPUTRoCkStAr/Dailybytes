@@ -1,6 +1,7 @@
 "use client"
 
-import { useEffect, useRef } from "react"
+import { useEffect, useRef, useState } from "react"
+import { useInView } from "react-intersection-observer"
 
 interface AdBannerProps {
   adClient?: string
@@ -11,13 +12,17 @@ interface AdBannerProps {
 }
 
 export function AdBanner({
-  adClient = "ca-pub-xxxxxxxxxxxxxxxx",
-  adSlot = "1234567890",
+  adClient = "ca-pub-xxxxxxxxxxxxxxxx", // Replace with your AdSense client ID
+  adSlot = "1234567890", // Replace with your ad slot ID
   format = "auto",
   className = "",
   responsive = true,
 }: AdBannerProps) {
-  // Use the correct type for <ins> element: HTMLModElement
+  const [isLoaded, setIsLoaded] = useState(false)
+  const { ref, inView } = useInView({
+    threshold: 0,
+    triggerOnce: true
+  })
   const adRef = useRef<HTMLModElement>(null)
 
   useEffect(() => {
@@ -31,33 +36,33 @@ export function AdBanner({
       document.head.appendChild(script)
     }
 
-    // Push ads
-    if (window.adsbygoogle && adRef.current) {
+    // Push ads when in view
+    if (inView && window.adsbygoogle && adRef.current && !isLoaded) {
       try {
-        ;(window.adsbygoogle = window.adsbygoogle || []).push({})
+        (window.adsbygoogle = window.adsbygoogle || []).push({})
+        setIsLoaded(true)
       } catch (error) {
         console.error("AdSense error:", error)
       }
     }
-  }, [adClient])
+  }, [adClient, inView, isLoaded])
 
   return (
-    <div className={`ad-container my-8 text-center ${className}`}>
+    <div ref={ref} className={`ad-container my-8 text-center ${className}`}>
       <p className="text-xs text-muted-foreground mb-2">Advertisement</p>
       <ins
         ref={adRef}
         className="adsbygoogle"
-        style={{ display: "block" }}
+        style={{ display: "block", minHeight: "100px" }}
         data-ad-client={adClient}
         data-ad-slot={adSlot}
         data-ad-format={format}
         data-full-width-responsive={responsive ? "true" : "false"}
-      ></ins>
+      />
     </div>
   )
 }
 
-// Add this to a types/global.d.ts file if needed
 declare global {
   interface Window {
     adsbygoogle: any[]
